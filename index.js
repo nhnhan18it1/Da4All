@@ -1,7 +1,8 @@
 var express = require("express");
 var app = express();
-var server = require("http").createServer(app).listen(process.env.PORT || 3000);
-var io = require("socket.io").listen(server);
+var https = require("https")//.createServer(app).listen(process.env.PORT || 3000);
+const httpolyglot = require('httpolyglot')
+
 var fs = require("fs")
 var bodyParser = require('body-parser');
 var multer = require('multer');
@@ -16,6 +17,18 @@ var con = mysql.createConnection({
   password: "56cWxVOzXaCCD5QmDQsr",
   database: "b8qlmi0rrl6fqlz9g7xq"
 })
+
+const options = {
+  key: fs.readFileSync(path.join(__dirname,'..','ssl','key.pem'), 'utf-8'),
+  cert: fs.readFileSync(path.join(__dirname,'..','ssl','cert.pem'), 'utf-8')
+}
+port = process.env.PORT || 3000
+const httpsServer = httpolyglot.createServer(options, app)
+httpsServer.listen(port, () => {
+  console.log(`listening on port ${port}`)
+})
+
+var io = require("socket.io").listen(httpsServer);
 
 con.connect((err)=>{
   if(err) throw err;
