@@ -8,10 +8,21 @@ var multer = require('multer');
 var upload = multer();
 const path = require('path')
 const { v4: uuidV4 } = require("uuid");
-const { group } = require("console");
+var session = require('express-session')
+var mysql = require('mysql')
+var con = mysql.createConnection({
+  host: "b8qlmi0rrl6fqlz9g7xq-mysql.services.clever-cloud.com",
+  user: "ulxhup08hubnlnlb",
+  password: "56cWxVOzXaCCD5QmDQsr",
+  database: "b8qlmi0rrl6fqlz9g7xq"
+})
 
+con.connect((err)=>{
+  if(err) throw err;
+  console.log("db connected")
+})
 peers = {}
-var groups=[]
+var groups = []
 // [{
 //   gId:1,
 //   name:'aaaa',
@@ -21,12 +32,36 @@ var groups=[]
 //   }
 // }]
 app.use(bodyParser.json());
-// app.set('view engine','ejs')
+app.set('view engine', 'ejs')
+app.set('views', './views')
 app.use(express.static("public"))
 app.use(express.static('node_modules'))
+app.use(session({
+  secret: 'this-is-a-secret-token',
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 60000,
+  }
+}));
+app.use(function (req, res, next) {
+  if(req.session.user!=null){
+    res.locals.user = req.session.user;
+  }
+  
+  next();
+});
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html')
+})
+app.get('/room', (req, res) => {
+  req.session.user={
+    id:1,
+    name:'hele'
+  }
+  console.log(req.session.user)
+  res.render('room')
 })
 
 // app.get('/:room',(req, res)=>{
@@ -41,16 +76,16 @@ io.on("connection", function (socket) {
 
   // console.log(peers)
 
-  socket.on('CreateRoom',(data)=>{
-    roomx={
-          gId:groups.length+1,
-          name:data,
-          key:socket.id,
-          gpeers:{
-            
-          }
+  socket.on('CreateRoom', (data) => {
+    roomx = {
+      gId: groups.length + 1,
+      name: data,
+      key: socket.id,
+      gpeers: {
+
+      }
     }
-    roomx.gpeers[socket.id]=socket
+    roomx.gpeers[socket.id] = socket
     groups.push(roomx)
     console.log(groups)
     // groups.forEach((item, index)=>{
@@ -58,12 +93,19 @@ io.on("connection", function (socket) {
     // })
   })
 
-  socket.on('joinRoom',(data)=>{
-    groups.forEach((item, index)=>{
-      if(item.gId==data.gId){
-        item.gpeers[socket.id]=socket
+  socket.on('joinRoom', (data) => {
+    ix = 0;
+    groups.forEach((item, index) => {
+      if (item.gId == data.gId) {
+        item.gpeers[socket.id] = socket
+        ix = index;
       }
     })
+    for (let id in groups[ix].gpeers) {
+      if (id === socket.id) continue
+      console.log('sending init re to' + socket.id)
+      groups[ix].gpeers[id].emit('initReceive', socket.id)
+    }
   })
 
   socket.on('clinetReady', (data) => {
