@@ -19,8 +19,8 @@ var con = mysql.createConnection({
 })
 
 const options = {
-  key: fs.readFileSync(path.join(__dirname,'..','ssl','key.pem'), 'utf-8'),
-  cert: fs.readFileSync(path.join(__dirname,'..','ssl','cert.pem'), 'utf-8')
+  key: fs.readFileSync(path.join(__dirname,'.','ssl','key.pem'), 'utf-8'),
+  cert: fs.readFileSync(path.join(__dirname,'.','ssl','cert.pem'), 'utf-8')
 }
 port = process.env.PORT || 3000
 const httpsServer = httpolyglot.createServer(options, app)
