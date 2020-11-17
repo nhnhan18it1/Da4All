@@ -18,6 +18,19 @@ var con = mysql.createConnection({
   database: "b8qlmi0rrl6fqlz9g7xq"
 })
 
+let pool=mysql.createPool({
+  host: "b8qlmi0rrl6fqlz9g7xq-mysql.services.clever-cloud.com",
+  user: "ulxhup08hubnlnlb",
+  password: "56cWxVOzXaCCD5QmDQsr",
+  database: "b8qlmi0rrl6fqlz9g7xq"
+});
+pool.on('connection', function (_conn) {
+  if (_conn) {
+      logger.info('Connected the database via threadId %d!!', _conn.threadId);
+      _conn.query('SET SESSION auto_increment_increment=1');
+  }
+});
+
 const options = {
   key: fs.readFileSync(path.join(__dirname,'.','ssl','key.pem'), 'utf-8'),
   cert: fs.readFileSync(path.join(__dirname,'.','ssl','cert.pem'), 'utf-8')
@@ -76,7 +89,51 @@ app.get('/room', (req, res) => {
   console.log(req.session.user)
   res.render('room')
 })
+app.get("/turnsv", function(req, res) {
+  let o = {
+      iceServers: [{   urls: ["stun:ss-turn2.xirsys.com"] },
+          {  
+              username: "E4bphbAk4Dbopxj_8MMpnJzYcbgpnBH2x4b_ES-4pnw0ZQWb3Xt5kC8CZvE9wyXRAAAAAF7ozCtuaGF2Ym5t",
+                
+              credential: "299abf54-afd7-11ea-b1f4-0242ac140004",
+                
+              urls: ["turn:ss-turn2.xirsys.com:80?transport=udp",       
+                  "turn:ss-turn2.xirsys.com:3478?transport=udp",       
+                  "turn:ss-turn2.xirsys.com:80?transport=tcp",       
+                  "turn:ss-turn2.xirsys.com:3478?transport=tcp",       
+                  "turns:ss-turn2.xirsys.com:443?transport=tcp",       
+                  "turns:ss-turn2.xirsys.com:5349?transport=tcp"  
+              ]
+          }
+      ]
+  };
 
+  let bodyString = JSON.stringify(o);
+  let https = require("https");
+  let options = {
+      host: "global.xirsys.net",
+      path: "/_turn/streamx",
+      method: "PUT",
+      headers: {
+          "Authorization": "Basic " + Buffer.from("nhavbnm:feffd4ec-afd5-11ea-b23e-0242ac150003").toString("base64"),
+          "Content-Type": "application/json",
+          "Content-Length": bodyString.length
+      }
+  };
+
+  let httpreq = https.request(options, function(httpres) {
+      let str = "";
+      httpres.on("data", function(data) { str += data; });
+      httpres.on("error", function(e) { console.log("error: ", e); });
+      httpres.on("end", function() {
+          console.log("response: ", str);
+          res.send(str);
+      });
+  });
+
+  httpreq.on("error", function(e) { console.log("request error: ", e); });
+  httpreq.end(bodyString);
+})
 // app.get('/:room',(req, res)=>{
 //     res.render('room',{roomId: req.params.room})
 // })
@@ -135,6 +192,14 @@ io.on("connection", function (socket) {
     peers[data.socket_id].emit('signal', {
       socket_id: socket.id,
       signal: data.signal
+    })
+  })
+
+  socket.on("outRoom",(data)=>{
+    groups.forEach((item)=>{
+      if(item.gId==data){
+        delete item.gpeers[socket.id]
+      }
     })
   })
 
