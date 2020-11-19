@@ -57,10 +57,7 @@ httpsServer.listen(port, () => {
 
 var io = require("socket.io").listen(httpsServer);
 
-con.connect((err)=>{
-  if(err) throw err;
-  console.log("db connected")
-})
+
 peers = {}
 var groups = []
 // [{
