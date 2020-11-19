@@ -189,6 +189,10 @@ io.on("connection", function (socket) {
     }
   })
 
+  socket.on("getRoom",()=>{
+    socket.emit("Svs_getRoom",groups)
+  })
+
   socket.on('clinetReady', (data) => {
     for (let id in peers) {
       if (id === socket.id) continue
