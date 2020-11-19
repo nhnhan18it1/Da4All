@@ -169,6 +169,7 @@ io.on("connection", function (socket) {
     roomx.gpeers[socket.id] = socket
     groups.push(roomx)
     console.log(groups)
+    socket.broadcast.emit("Svs_getRoom",groups)
     // groups.forEach((item, index)=>{
     //   console.log(item.gId)
     // })
@@ -214,6 +215,7 @@ io.on("connection", function (socket) {
     groups.forEach((item)=>{
       if(item.gId==data){
         delete item.gpeers[socket.id]
+
       }
     })
   })
