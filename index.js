@@ -11,25 +11,39 @@ const path = require('path')
 const { v4: uuidV4 } = require("uuid");
 var session = require('express-session')
 var mysql = require('mysql')
-var con = mysql.createConnection({
-  host: "b8qlmi0rrl6fqlz9g7xq-mysql.services.clever-cloud.com",
-  user: "ulxhup08hubnlnlb",
-  password: "56cWxVOzXaCCD5QmDQsr",
-  database: "b8qlmi0rrl6fqlz9g7xq"
-})
 
-let pool=mysql.createPool({
+var dbConfig={
   host: "b8qlmi0rrl6fqlz9g7xq-mysql.services.clever-cloud.com",
   user: "ulxhup08hubnlnlb",
   password: "56cWxVOzXaCCD5QmDQsr",
   database: "b8qlmi0rrl6fqlz9g7xq"
-});
-pool.on('connection', function (_conn) {
-  if (_conn) {
-      logger.info('Connected the database via threadId %d!!', _conn.threadId);
-      _conn.query('SET SESSION auto_increment_increment=1');
-  }
-});
+}
+
+var connection;
+function handleDisconnect() {
+  connection = mysql.createConnection(db_config); // Recreate the connection, since
+                                                  // the old one cannot be reused.
+
+  connection.connect(function(err) {              // The server is either down
+    if(err) {                                     // or restarting (takes a while sometimes).
+      console.log('error when connecting to db:', err);
+      setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+    }                                     // to avoid a hot loop, and to allow our node script to
+  });                                     // process asynchronous requests in the meantime.
+                                          // If you're also serving http, display a 503 error.
+  connection.on('error', function(err) {
+    console.log('db error', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+      handleDisconnect();                         // lost due to either server restart, or a
+    } else {                                      // connnection idle timeout (the wait_timeout
+      throw err;                                  // server variable configures this)
+    }
+  });
+}
+
+handleDisconnect();
+
+
 
 const options = {
   key: fs.readFileSync(path.join(__dirname,'.','ssl','key.pem'), 'utf-8'),
