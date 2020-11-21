@@ -198,11 +198,11 @@ io.on("connection", function (socket) {
         isExistRoom=false;
       }
     })
-    
+
     if (!isExistRoom) {
       roomx = {
         gId: groups.length + 1,
-        name: data,
+        name: data.gId,
         key: socket.id,
         gpeers: {
   
