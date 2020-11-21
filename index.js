@@ -89,8 +89,12 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html')
+app.get('/',(req,res)=>{
+  res.render('index')
+})
+
+app.get('/meeting/:room', (req, res) => {
+  res.render('meeting',{roomId: req.params.room})
 })
 app.get('/room', (req, res) => {
   req.session.user={
@@ -213,6 +217,15 @@ io.on("connection", function (socket) {
     }
   })
 
+  socket.on('clinetReadyGroup', (data) => {
+    for (let id in groups.gpeers) {
+      if (id === socket.id) continue
+      console.log('sending init re to' + socket.id)
+      groups.gpeers[id].emit('initReceive', socket.id)
+    }
+  })
+
+
   socket.on('signal', data => {
     console.log('sending singnal from ' + socket.id + ' to ', data)
     if (!peers[data.socket_id]) return
@@ -223,10 +236,12 @@ io.on("connection", function (socket) {
   })
 
   socket.on("outRoom",(data)=>{
-    groups.forEach((item)=>{
+    groups.forEach((item, index)=>{
       if(item.gId==data){
         delete item.gpeers[socket.id]
-
+        if(item.gpeers.length==0){
+          groups.splice(index,1)
+        }
       }
     })
   })
@@ -235,6 +250,12 @@ io.on("connection", function (socket) {
     console.log("sk disconnect " + socket.id)
     socket.broadcast.emit('removePeer', socket.id)
     delete peers[socket.id]
+    groups.forEach((item, index) => {
+      delete item.gpeers[socket.id]
+      if(item.gpeers.length==0){
+        groups.splice(index,1)
+      }
+    });
   })
 
   socket.on("initSend", (init_socket_id) => {

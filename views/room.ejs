@@ -25,7 +25,12 @@
 
 <body>
     <a name="" id="" class="btn btn-primary" href="/" role="button">redirect</a>
-    <%= locals.user.id %>
+    
+    <% if (locals.user1=null) { %>
+     <%= locals.user.id %> 
+    <% } %>
+
+    b4
 </body>
 
 </html>

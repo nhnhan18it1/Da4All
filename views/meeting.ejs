@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/meeting.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        body{
+            background-color: rgb(19, 18, 18);
+        }
+    </style>
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="margin-top: 0px;margin-left: -1px;margin-right: -1px;" id="videos" class="row">
+        <div id="ctnVlocal" class="col-md-1">
+            <video id="localVideo" class="vid" autoplay muted></video>
+        </div>
+    </div>
+
+    <div style="margin: 20px;" class="row">
+        <div style="margin:0px;background-color: rgb(190, 190, 202);padding: 0px;" class="col-md-12">
+           <h2 style="text-align:center">Slideshow Gallery</h2>
+        </div>
+    </div>
+
+</body>
+<footer>
+
+
+</footer>
+<script>
+    const ROOM_ID= "<%= roomId %>"
+</script>
+<script lang="text/javascript" src="/socket.io/socket.io.js"></script>
+<script src="/simple-peer/simplepeer.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src='/js/script.js' lang="text/javascript"></script>
+
+</html>
