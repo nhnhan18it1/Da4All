@@ -212,11 +212,11 @@ io.on("connection", function (socket) {
       groups.push(roomx)
     }
     
-    for (let id in groups[ix].gpeers) {
-      if (id === socket.id) continue
-      console.log('sending init re to' + socket.id)
-      groups[ix].gpeers[id].emit('initReceive', socket.id)
-    }
+    // for (let id in groups[ix].gpeers) {
+    //   if (id === socket.id) continue
+    //   console.log('sending init re to' + socket.id)
+    //   groups[ix].gpeers[id].emit('initReceive', socket.id)
+    // }
   })
 
   socket.on("getRoom",()=>{
