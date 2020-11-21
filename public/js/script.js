@@ -45,7 +45,7 @@ navigator.mediaDevices.getUserMedia(constraints).then(stream=>{
 function init(){
     socket = io("/")
     console.log("init")
-
+    
     socket.emit('clinetReady',"hello");
 
     socket.on('initReceive',(socket_id)=>{

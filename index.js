@@ -150,11 +150,19 @@ app.get("/turnsv", function(req, res) {
 // })
 
 console.log("hello")
+function covertX() {
+  var gx=[]
+    groups.forEach(item => {
+      gx.push({gId : item.gId,name: item.name,key:item.key})
+    });
+  return gx
+}
+
 
 io.on("connection", function (socket) {
   console.log(socket.id);
   peers[socket.id] = socket
-
+  io.emit("ahihi","ahiji")
   // console.log(peers)
 
   socket.on('CreateRoom', (data) => {
@@ -168,8 +176,9 @@ io.on("connection", function (socket) {
     }
     roomx.gpeers[socket.id] = socket
     groups.push(roomx)
+    io.emit("Svs_getRoom",covertX())
     console.log(groups)
-    socket.broadcast.emit("Svs_getRoom",groups)
+    
     // groups.forEach((item, index)=>{
     //   console.log(item.gId)
     // })
@@ -191,7 +200,9 @@ io.on("connection", function (socket) {
   })
 
   socket.on("getRoom",()=>{
-    socket.emit("Svs_getRoom",groups)
+    // console.log(groups)
+    
+    socket.emit("Svs_getRoom",covertX())
   })
 
   socket.on('clinetReady', (data) => {
