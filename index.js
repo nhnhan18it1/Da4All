@@ -190,12 +190,28 @@ io.on("connection", function (socket) {
 
   socket.on('joinRoom', (data) => {
     ix = 0;
+    isExistRoom=false;
     groups.forEach((item, index) => {
       if (item.gId == data.gId) {
         item.gpeers[socket.id] = socket
         ix = index;
+        isExistRoom=false;
       }
     })
+    
+    if (!isExistRoom) {
+      roomx = {
+        gId: groups.length + 1,
+        name: data,
+        key: socket.id,
+        gpeers: {
+  
+        }
+      }
+      roomx.gpeers[socket.id] = socket
+      groups.push(roomx)
+    }
+    
     for (let id in groups[ix].gpeers) {
       if (id === socket.id) continue
       console.log('sending init re to' + socket.id)
@@ -224,6 +240,7 @@ io.on("connection", function (socket) {
       groups.gpeers[id].emit('initReceive', socket.id)
     }
   })
+
 
 
   socket.on('signal', data => {
