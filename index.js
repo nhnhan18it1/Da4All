@@ -233,7 +233,7 @@ io.on("connection", function (socket) {
     }
   })
 
-  socket.on('clinetReadyGroup', (data) => {
+  socket.on('clientReadyGroup', (data) => {
     console.log("clinetReadyGroup" +data) 
     for (let id in groups[data].gpeers) {
       if (id === socket.id) continue

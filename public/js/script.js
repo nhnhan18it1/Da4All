@@ -66,7 +66,7 @@ function init(){
     socket.on('joinRoomSucess',(data)=>{
         if(data!=-1){
             console.log("Join room success")
-            socket.emit('clinetReadyGroup',data);
+            socket.emit('clientReadyGroup',data);
         }
         
     })
