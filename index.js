@@ -228,7 +228,7 @@ io.on("connection", function (socket) {
   socket.on('clientReady', (data) => {
     for (let id in peers) {
       if (id === socket.id) continue
-      console.log('sending init re to' + socket.id)
+      console.log('sending init re to ' + socket.id)
       peers[id].emit('initReceive', socket.id)
     }
   })

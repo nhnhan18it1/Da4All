@@ -123,6 +123,7 @@ function removePeer(socket_id){
 }
 
 function addPeer(socket_id, am_init){
+    console.log("addpeer "+socket_id)
     peers[socket_id] = new SimplePeer({
         initiator: am_init,
         stream: localStreem,
