@@ -62,10 +62,18 @@ navigator.mediaDevices.getUserMedia(constraints).then(stream=>{
 function init(){
     socket = io("/")
     console.log("init")
-    
+
+    socket.on('joinRoomSucess',(data)=>{
+        if(data!=-1){
+            console.log("Join room success")
+            socket.emit('clinetReadyGroup',data);
+        }
+        
+    })
+
     socket.emit('joinRoom',{gId:ROOM_ID})
 
-    socket.emit('clientReadyGroup',"hello");
+    
 
     socket.on('initReceive',(socket_id)=>{
         console.log('INIT RECEIVE '+ socket_id)
@@ -127,6 +135,7 @@ function addPeer(socket_id, am_init){
         })
     })
     peers[socket_id].on('stream',stream=>{
+        console.log(stream);
         let newVid = document.createElement('video')
         newVid.srcObject = stream
         newVid.id = socket_id

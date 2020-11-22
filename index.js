@@ -167,7 +167,7 @@ io.on("connection", function (socket) {
   console.log(socket.id);
   peers[socket.id] = socket
   // io.emit("ahihi","ahiji")
-  // console.log(peers)
+  //console.log(peers)
 
   socket.on('CreateRoom', (data) => {
     roomx = {
@@ -191,11 +191,13 @@ io.on("connection", function (socket) {
   socket.on('joinRoom', (data) => {
     ix = 0;
     isExistRoom=false;
+    console.log(data)
     groups.forEach((item, index) => {
-      if (item.gId == data.gId) {
+      if (item.name === data.gId) {
         item.gpeers[socket.id] = socket
         ix = index;
-        isExistRoom=false;
+        isExistRoom=true;
+        console.log("join room sucess "+data.gId)
       }
     })
 
@@ -210,13 +212,11 @@ io.on("connection", function (socket) {
       }
       roomx.gpeers[socket.id] = socket
       groups.push(roomx)
+      ix=-1
     }
-    
-    // for (let id in groups[ix].gpeers) {
-    //   if (id === socket.id) continue
-    //   console.log('sending init re to' + socket.id)
-    //   groups[ix].gpeers[id].emit('initReceive', socket.id)
-    // }
+    console.log("ix-"+ix)
+    console.log(groups)
+    socket.emit("joinRoomSucess",ix);
   })
 
   socket.on("getRoom",()=>{
@@ -234,11 +234,11 @@ io.on("connection", function (socket) {
   })
 
   socket.on('clinetReadyGroup', (data) => {
-    console.log()
-    for (let id in groups.gpeers) {
+    console.log("clinetReadyGroup" +data) 
+    for (let id in groups[data].gpeers) {
       if (id === socket.id) continue
       console.log('sending init re to' + socket.id)
-      groups.gpeers[id].emit('initReceive', socket.id)
+      groups[data].gpeers[id].emit('initReceive', socket.id)
     }
   })
 
