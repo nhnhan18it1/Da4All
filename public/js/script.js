@@ -130,6 +130,7 @@ function addPeer(socket_id, am_init){
         config: configuration
     })
     peers[socket_id].on('signal',(data)=>{
+        console.log(data)
         socket.emit('signal',{
             signal: data,
             socket_id: socket_id
