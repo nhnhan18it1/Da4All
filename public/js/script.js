@@ -99,6 +99,7 @@ function init(){
     })
 
     socket.on('signal', data => {
+        console.log(data)
         peers[data.socket_id].signal(data.signal)
     })
 }
