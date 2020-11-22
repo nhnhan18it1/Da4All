@@ -166,7 +166,7 @@ function covertX() {
 io.on("connection", function (socket) {
   console.log(socket.id);
   peers[socket.id] = socket
-  io.emit("ahihi","ahiji")
+  // io.emit("ahihi","ahiji")
   // console.log(peers)
 
   socket.on('CreateRoom', (data) => {
@@ -225,7 +225,7 @@ io.on("connection", function (socket) {
     socket.emit("Svs_getRoom",covertX())
   })
 
-  socket.on('clinetReady', (data) => {
+  socket.on('clientReady', (data) => {
     for (let id in peers) {
       if (id === socket.id) continue
       console.log('sending init re to' + socket.id)
@@ -234,6 +234,7 @@ io.on("connection", function (socket) {
   })
 
   socket.on('clinetReadyGroup', (data) => {
+    console.log()
     for (let id in groups.gpeers) {
       if (id === socket.id) continue
       console.log('sending init re to' + socket.id)

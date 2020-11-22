@@ -65,7 +65,7 @@ function init(){
     
     socket.emit('joinRoom',{gId:ROOM_ID})
 
-    socket.emit('clinetReadyGroup',"hello");
+    socket.emit('clientReadyGroup',"hello");
 
     socket.on('initReceive',(socket_id)=>{
         console.log('INIT RECEIVE '+ socket_id)
