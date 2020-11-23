@@ -251,6 +251,7 @@ io.on("connection", function (socket) {
       socket_id: socket.id,
       signal: data.signal
     })
+    console.log('sending singnal from ' + socket.id + ' to ', data)
   })
 
   socket.on("outRoom",(data)=>{

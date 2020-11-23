@@ -43,8 +43,11 @@ let constraints = {
         },
         height:{
             max: 300
-        }
-    }
+        },
+        type:"camera",
+        withoutExtension:true
+    },
+    
 }
 
 constraints.video.facingMode = {
@@ -168,4 +171,51 @@ function removeLocalStream() {
     for (let socket_id in peers) {
         removePeer(socket_id)
     }
+}
+
+function ShareScreen() {
+    if (constraints.video.facingMode.ideal === 'user') {
+        constraints.video.facingMode.ideal = 'environment'
+    } else {
+        constraints.video.facingMode.ideal = 'user'
+    }
+
+    
+
+    const tracks = localStreem.getTracks();
+    var isShare=(constraints.video.type=="camera") ? false : true;
+    tracks.forEach(function (track) {
+        track.stop()
+    })
+
+    localVideo.srcObject = null
+    if(!isShare){
+        navigator.mediaDevices.getDisplayMedia(constraints).then(stream => {
+            changeStream(stream);
+        })
+        constraints.video.type="screen"
+    }
+    else{
+        navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+            changeStream(stream);
+        })
+        constraints.video.type="camera"
+    }
+    
+}
+
+function changeStream(stream) {
+    for (let socket_id in peers) {
+        for (let index in peers[socket_id].streams[0].getTracks()) {
+            for (let index2 in stream.getTracks()) {
+                if (peers[socket_id].streams[0].getTracks()[index].kind === stream.getTracks()[index2].kind) {
+                    peers[socket_id].replaceTrack(peers[socket_id].streams[0].getTracks()[index], stream.getTracks()[index2], peers[socket_id].streams[0])
+                    break;
+                }
+            }
+        }
+    }
+
+    localStreem = stream
+    localVideo.srcObject = stream
 }
