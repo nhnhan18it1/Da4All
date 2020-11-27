@@ -213,6 +213,7 @@ io.on("connection", function (socket) {
       roomx.gpeers[socket.id] = socket
       groups.push(roomx)
       ix=-1
+      socket.broadcast.emit("Svs_getRoom",covertX())
     }
     console.log("ix-"+ix)
     console.log(groups)
