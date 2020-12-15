@@ -39,10 +39,10 @@ let constraints = {
     audio: true,
     video: {
         width: {
-            max: 300
+            max: 750
         },
         height:{
-            max: 300
+            max: 1080
         },
         type:"camera",
         withoutExtension:true
@@ -58,6 +58,7 @@ navigator.mediaDevices.getUserMedia(constraints).then(stream=>{
     console.log("Receive local stream");
 
     localVideo.srcObject = stream
+    mainvideo.srcObject = stream
     localStreem = stream;
     init();
 }).catch(e => alert(`getusermedia err ${e.name}`))
@@ -105,6 +106,27 @@ function init(){
         console.log(data)
         peers[data.socket_id].signal(data.signal)
     })
+
+    socket.on('message',(data)=>{
+        console.log(data)
+        let ctv = document.createElement('p')
+        let name = document.createElement('strong')
+        let br = document.createElement('br')
+        name.append(data.name)
+        ctv.appendChild(name)
+        ctv.append(" "+data.time)
+        ctv.appendChild(br)
+        ctv.append(data.content)
+        mess.appendChild(ctv)
+    })
+}
+
+function count(params) {
+    c=1;
+    for (let id in params) {
+        c++;      
+    }
+    return c;
 }
 
 function removePeer(socket_id){
@@ -124,6 +146,8 @@ function removePeer(socket_id){
     }
     if(peers[socket_id])peers[socket_id].destroy();
     delete peers[socket_id]
+    $("#count_online").text(" "+count(peers));
+    console.log($("#count_online").text())
 }
 
 function addPeer(socket_id, am_init){
@@ -147,6 +171,7 @@ function addPeer(socket_id, am_init){
         newVid.id = socket_id
         newVid.playsinline = false
         newVid.autoplay = true
+        newVid.click = "changeMainVideo(this)"
         newVid.className = "vid"
 
         let ctn = document.createElement('div')
@@ -155,6 +180,13 @@ function addPeer(socket_id, am_init){
         ctn.appendChild(newVid)
         videos.appendChild(ctn)
     })
+    console.log($("#count_online").text())
+    $("#count_online").text(" "+count(peers));
+    
+    $(".vid").click(function (e) { 
+        e.preventDefault();
+        changeMainVideo(this)
+    });
 }
 
 function removeLocalStream() {
@@ -218,4 +250,44 @@ function changeStream(stream) {
 
     localStreem = stream
     localVideo.srcObject = stream
+}
+
+function senMessage() {
+    if (socket!=null) {
+        let ct = $("#ipmess").val();
+        socket.emit('send_message',{gId:ROOM_ID,name:socket.id,content:ct})
+        $("#ipmess").val("");
+        let ctv = document.createElement('p')
+        let name = document.createElement('strong')
+        let br = document.createElement('br')
+        name.append("bạn")
+        ctv.appendChild(name)
+        ctv.append(" ")
+        ctv.appendChild(br)
+        ctv.append(ct)
+        mess.appendChild(ctv)
+    }
+}
+
+$(document).ready(function () {
+    $(".vid").click(function (e) { 
+        e.preventDefault();
+        changeMainVideo(this)
+    });
+    $(document).on("click",".vid", function () {
+        changeMainVideo(this)
+    });
+    $('#ipmess').keyup(function(e){
+        if(e.keyCode == 13)
+        {
+            senMessage()
+        }
+    });
+});
+
+function changeMainVideo(params) {
+    var src = params.srcObject;
+    mainvideo.srcObject = src
+    console.log("change")
+    console.log(src)
 }

@@ -12,6 +12,8 @@ const { v4: uuidV4 } = require("uuid");
 var session = require('express-session')
 var mysql = require('mysql')
 
+var acc = require("./account");
+
 var dbConfig={
   host: "b8qlmi0rrl6fqlz9g7xq-mysql.services.clever-cloud.com",
   user: "ulxhup08hubnlnlb",
@@ -21,22 +23,19 @@ var dbConfig={
 
 var connection;
 function handleDisconnect() {
-  connection = mysql.createConnection(dbConfig); // Recreate the connection, since
-                                                  // the old one cannot be reused.
-
-  connection.connect(function(err) {              // The server is either down
-    if(err) {                                     // or restarting (takes a while sometimes).
+  connection = mysql.createConnection(dbConfig); 
+  connection.connect(function(err) {              
+    if(err) {                                     
       console.log('error when connecting to db:', err);
-      setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
-    }                                     // to avoid a hot loop, and to allow our node script to
-  });                                     // process asynchronous requests in the meantime.
-                                          // If you're also serving http, display a 503 error.
+      setTimeout(handleDisconnect, 2000); 
+    }                                     
+  });                                     
   connection.on('error', function(err) {
     console.log('db error', err);
-    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-      handleDisconnect();                         // lost due to either server restart, or a
-    } else {                                      // connnection idle timeout (the wait_timeout
-      throw err;                                  // server variable configures this)
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+      handleDisconnect();                          
+    } else {                                      
+      throw err;                                  
     }
   });
 }
@@ -68,7 +67,12 @@ var groups = []
 //     sk_id:socket
 //   }
 // }]
+app.use(express.urlencoded({
+  extended: true
+}))
+app.use(express.json());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }))
 app.set('view engine', 'ejs')
 app.set('views', './views')
 app.use(express.static("public"))
@@ -104,6 +108,19 @@ app.get('/room', (req, res) => {
   console.log(req.session.user)
   res.render('room')
 })
+
+app.post("/login",(req, res)=>{
+ 
+  var username = req.body.username;
+  var pass = req.body.password;
+  console.log(req.body.username);
+  acc.login(connection,username,pass,(rs)=>{
+    console.log(rs);
+    res.json(rs);
+  });
+  
+})
+
 app.get("/turnsv", function(req, res) {
   let o = {
       iceServers: [{   urls: ["stun:ss-turn2.xirsys.com"] },
@@ -261,6 +278,22 @@ io.on("connection", function (socket) {
         delete item.gpeers[socket.id]
         if(item.gpeers.length==0){
           groups.splice(index,1)
+        }
+      }
+    })
+  })
+
+  socket.on('send_message',(data)=>{
+    // console.log(data.gId)
+    let crtime = new Date();
+    data.time = crtime.getHours().toString()+":"+crtime.getMinutes().toString()
+    console.log(data.time)
+    groups.forEach((item, index)=>{
+      if(item.name==data.gId){
+        for (let id in item.gpeers) {
+          if(id == socket.id) continue
+          // console.log(data)
+          item.gpeers[id].emit('message',data)
         }
       }
     })
