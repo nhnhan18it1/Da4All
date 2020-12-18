@@ -13,8 +13,9 @@ var session = require('express-session')
 var mysql = require('mysql')
 
 var acc = require("./account");
+var room = require("./room");
 
-var dbConfig={
+var dbConfig = {
   host: "b8qlmi0rrl6fqlz9g7xq-mysql.services.clever-cloud.com",
   user: "ulxhup08hubnlnlb",
   password: "56cWxVOzXaCCD5QmDQsr",
@@ -23,19 +24,19 @@ var dbConfig={
 
 var connection;
 function handleDisconnect() {
-  connection = mysql.createConnection(dbConfig); 
-  connection.connect(function(err) {              
-    if(err) {                                     
+  connection = mysql.createConnection(dbConfig);
+  connection.connect(function (err) {
+    if (err) {
       console.log('error when connecting to db:', err);
-      setTimeout(handleDisconnect, 2000); 
-    }                                     
-  });                                     
-  connection.on('error', function(err) {
+      setTimeout(handleDisconnect, 2000);
+    }
+  });
+  connection.on('error', function (err) {
     console.log('db error', err);
-    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
-      handleDisconnect();                          
-    } else {                                      
-      throw err;                                  
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      handleDisconnect();
+    } else {
+      throw err;
     }
   });
 }
@@ -45,8 +46,8 @@ handleDisconnect();
 
 
 const options = {
-  key: fs.readFileSync(path.join(__dirname,'.','ssl','key.pem'), 'utf-8'),
-  cert: fs.readFileSync(path.join(__dirname,'.','ssl','cert.pem'), 'utf-8')
+  key: fs.readFileSync(path.join(__dirname, '.', 'ssl', 'key.pem'), 'utf-8'),
+  cert: fs.readFileSync(path.join(__dirname, '.', 'ssl', 'cert.pem'), 'utf-8')
 }
 port = process.env.PORT || 3000
 const httpsServer = httpolyglot.createServer(options, app)
@@ -86,85 +87,130 @@ app.use(session({
   }
 }));
 app.use(function (req, res, next) {
-  if(req.session.user!=null){
+  if (req.session.user != null) {
     res.locals.user = req.session.user;
   }
-  
+
   next();
 });
 
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
   res.render('index')
 })
 
 app.get('/meeting/:room', (req, res) => {
-  res.render('meeting',{roomId: req.params.room})
+  res.render('meeting', { roomId: req.params.room })
 })
 app.get('/room', (req, res) => {
-  req.session.user={
-    id:1,
-    name:'hele'
+  req.session.user = {
+    id: 1,
+    name: 'hele'
   }
   console.log(req.session.user)
   res.render('room')
 })
 
-app.post("/login",(req, res)=>{
- 
+app.get("/createroom", function (req, res) {
+  res.render('createroom')
+})
+
+app.get("/login", function (req, res) {
+
+  res.render("login");
+
+})
+
+app.post("/createroom", (req, res) => {
+  var roomName = req.body.roomName;
+  var key = req.body.key;
+  var main = req.body.idMain;
+  if (roomName && key && main) {
+    room.createRoom(connection, roomName, key, main, function (param) {
+      console.log(param)
+      res.json(param)
+    })
+  }
+  else {
+    res.send("Err");
+  }
+
+})
+
+app.post("/login", (req, res) => {
   var username = req.body.username;
   var pass = req.body.password;
   console.log(req.body.username);
-  acc.login(connection,username,pass,(rs)=>{
+  acc.login(connection, username, pass, (rs) => {
     console.log(rs);
     res.json(rs);
   });
-  
 })
 
-app.get("/turnsv", function(req, res) {
+
+
+app.get("/getroom", (req, res) => {
+  room.getRoom(connection, function (param) {
+    res.json(param)
+  })
+})
+
+app.get("/turnsv", function (req, res) {
   let o = {
-      iceServers: [{   urls: ["stun:ss-turn2.xirsys.com"] },
-          {  
-              username: "E4bphbAk4Dbopxj_8MMpnJzYcbgpnBH2x4b_ES-4pnw0ZQWb3Xt5kC8CZvE9wyXRAAAAAF7ozCtuaGF2Ym5t",
-                
-              credential: "299abf54-afd7-11ea-b1f4-0242ac140004",
-                
-              urls: ["turn:ss-turn2.xirsys.com:80?transport=udp",       
-                  "turn:ss-turn2.xirsys.com:3478?transport=udp",       
-                  "turn:ss-turn2.xirsys.com:80?transport=tcp",       
-                  "turn:ss-turn2.xirsys.com:3478?transport=tcp",       
-                  "turns:ss-turn2.xirsys.com:443?transport=tcp",       
-                  "turns:ss-turn2.xirsys.com:5349?transport=tcp"  
-              ]
-          }
+    iceServers: [{ urls: ["stun:ss-turn2.xirsys.com"] },
+    {
+      username: "E4bphbAk4Dbopxj_8MMpnJzYcbgpnBH2x4b_ES-4pnw0ZQWb3Xt5kC8CZvE9wyXRAAAAAF7ozCtuaGF2Ym5t",
+
+      credential: "299abf54-afd7-11ea-b1f4-0242ac140004",
+
+      urls: ["turn:ss-turn2.xirsys.com:80?transport=udp",
+        "turn:ss-turn2.xirsys.com:3478?transport=udp",
+        "turn:ss-turn2.xirsys.com:80?transport=tcp",
+        "turn:ss-turn2.xirsys.com:3478?transport=tcp",
+        "turns:ss-turn2.xirsys.com:443?transport=tcp",
+        "turns:ss-turn2.xirsys.com:5349?transport=tcp"
       ]
+    }
+    ]
   };
+
+  let o2 = {iceServers: [{
+    urls: "stun:stun.l.google.com:19302"
+    },
+    // public turn server from https://gist.github.com/sagivo/3a4b2f2c7ac6e1b5267c2f1f59ac6c6b
+    // set your own servers here
+    {
+      url: 'turn:192.158.29.39:3478?transport=udp',
+      credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+      username: '28224511:1379330808'
+    }
+  ]}
 
   let bodyString = JSON.stringify(o);
   let https = require("https");
   let options = {
-      host: "global.xirsys.net",
-      path: "/_turn/streamx",
-      method: "PUT",
-      headers: {
-          "Authorization": "Basic " + Buffer.from("nhavbnm:feffd4ec-afd5-11ea-b23e-0242ac150003").toString("base64"),
-          "Content-Type": "application/json",
-          "Content-Length": bodyString.length
-      }
+    host: "global.xirsys.net",
+    path: "/_turn/streamx",
+    method: "PUT",
+    headers: {
+      "Authorization": "Basic " + Buffer.from("nhavbnm:feffd4ec-afd5-11ea-b23e-0242ac150003").toString("base64"),
+      "Content-Type": "application/json",
+      "Content-Length": bodyString.length
+    }
   };
 
-  let httpreq = https.request(options, function(httpres) {
-      let str = "";
-      httpres.on("data", function(data) { str += data; });
-      httpres.on("error", function(e) { console.log("error: ", e); });
-      httpres.on("end", function() {
-          console.log("response: ", str);
-          res.send(str);
-      });
+  let httpreq = https.request(options, function (httpres) {
+    let str = "";
+    httpres.on("data", function (data) { str += data; });
+    httpres.on("error", function (e) { console.log("error: ", e); });
+    httpres.on("end", function () {
+      console.log("response: ", str);
+      // res.send(str);
+    });
   });
 
-  httpreq.on("error", function(e) { console.log("request error: ", e); });
+  httpreq.on("error", function (e) { console.log("request error: ", e); });
   httpreq.end(bodyString);
+  res.send(o2)
 })
 // app.get('/:room',(req, res)=>{
 //     res.render('room',{roomId: req.params.room})
@@ -172,10 +218,10 @@ app.get("/turnsv", function(req, res) {
 
 console.log("hello")
 function covertX() {
-  var gx=[]
-    groups.forEach(item => {
-      gx.push({gId : item.gId,name: item.name,key:item.key})
-    });
+  var gx = []
+  groups.forEach(item => {
+    gx.push({ gId: item.gId, name: item.name, key: item.key })
+  });
   return gx
 }
 
@@ -197,9 +243,9 @@ io.on("connection", function (socket) {
     }
     roomx.gpeers[socket.id] = socket
     groups.push(roomx)
-    io.emit("Svs_getRoom",covertX())
+    io.emit("Svs_getRoom", covertX())
     console.log(groups)
-    
+
     // groups.forEach((item, index)=>{
     //   console.log(item.gId)
     // })
@@ -207,14 +253,14 @@ io.on("connection", function (socket) {
 
   socket.on('joinRoom', (data) => {
     ix = 0;
-    isExistRoom=false;
+    isExistRoom = false;
     console.log(data)
     groups.forEach((item, index) => {
       if (item.name === data.gId) {
         item.gpeers[socket.id] = socket
         ix = index;
-        isExistRoom=true;
-        console.log("join room sucess "+data.gId)
+        isExistRoom = true;
+        console.log("join room sucess " + data.gId)
       }
     })
 
@@ -224,23 +270,23 @@ io.on("connection", function (socket) {
         name: data.gId,
         key: socket.id,
         gpeers: {
-  
+
         }
       }
       roomx.gpeers[socket.id] = socket
       groups.push(roomx)
-      ix=-1
-      socket.broadcast.emit("Svs_getRoom",covertX())
+      ix = -1
+      socket.broadcast.emit("Svs_getRoom", covertX())
     }
-    console.log("ix-"+ix)
+    console.log("ix-" + ix)
     console.log(groups)
-    socket.emit("joinRoomSucess",ix);
+    socket.emit("joinRoomSucess", ix);
   })
 
-  socket.on("getRoom",()=>{
+  socket.on("getRoom", () => {
     // console.log(groups)
-    
-    socket.emit("Svs_getRoom",covertX())
+
+    socket.emit("Svs_getRoom", covertX())
   })
 
   socket.on('clientReady', (data) => {
@@ -252,7 +298,7 @@ io.on("connection", function (socket) {
   })
 
   socket.on('clientReadyGroup', (data) => {
-    console.log("clinetReadyGroup" +data) 
+    console.log("clinetReadyGroup" + data)
     for (let id in groups[data].gpeers) {
       if (id === socket.id) continue
       console.log('sending init re to' + socket.id)
@@ -272,28 +318,28 @@ io.on("connection", function (socket) {
     console.log('sending singnal from ' + socket.id + ' to ', data)
   })
 
-  socket.on("outRoom",(data)=>{
-    groups.forEach((item, index)=>{
-      if(item.gId==data){
+  socket.on("outRoom", (data) => {
+    groups.forEach((item, index) => {
+      if (item.gId == data) {
         delete item.gpeers[socket.id]
-        if(item.gpeers.length==0){
-          groups.splice(index,1)
+        if (item.gpeers.length == 0) {
+          groups.splice(index, 1)
         }
       }
     })
   })
 
-  socket.on('send_message',(data)=>{
+  socket.on('send_message', (data) => {
     // console.log(data.gId)
     let crtime = new Date();
-    data.time = crtime.getHours().toString()+":"+crtime.getMinutes().toString()
+    data.time = crtime.getHours().toString() + ":" + crtime.getMinutes().toString()
     console.log(data.time)
-    groups.forEach((item, index)=>{
-      if(item.name==data.gId){
+    groups.forEach((item, index) => {
+      if (item.name == data.gId) {
         for (let id in item.gpeers) {
-          if(id == socket.id) continue
+          if (id == socket.id) continue
           // console.log(data)
-          item.gpeers[id].emit('message',data)
+          item.gpeers[id].emit('message', data)
         }
       }
     })
@@ -305,8 +351,8 @@ io.on("connection", function (socket) {
     delete peers[socket.id]
     groups.forEach((item, index) => {
       delete item.gpeers[socket.id]
-      if(item.gpeers.length==0){
-        groups.splice(index,1)
+      if (item.gpeers.length == 0) {
+        groups.splice(index, 1)
       }
     });
   })

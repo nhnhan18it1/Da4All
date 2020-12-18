@@ -5,35 +5,34 @@ let localStreem = null;
 let peers={}
 
  const configuration = {
-    iceServers: [{   urls: ["stun:ss-turn2.xirsys.com"] },
-        {  
-            username: "E4bphbAk4Dbopxj_8MMpnJzYcbgpnBH2x4b_ES-4pnw0ZQWb3Xt5kC8CZvE9wyXRAAAAAF7ozCtuaGF2Ym5t",
-              
-            credential: "299abf54-afd7-11ea-b1f4-0242ac140004",
-              
-            urls: ["turn:ss-turn2.xirsys.com:80?transport=udp",       
-                "turn:ss-turn2.xirsys.com:3478?transport=udp",       
-                "turn:ss-turn2.xirsys.com:80?transport=tcp",       
-                "turn:ss-turn2.xirsys.com:3478?transport=tcp",       
-                "turns:ss-turn2.xirsys.com:443?transport=tcp",       
-                "turns:ss-turn2.xirsys.com:5349?transport=tcp"  
-            ]
-        }
-    ]
+    // iceServers: [{   urls: ["stun:ss-turn2.xirsys.com"] },
+    //     {  
+    //         username: "E4bphbAk4Dbopxj_8MMpnJzYcbgpnBH2x4b_ES-4pnw0ZQWb3Xt5kC8CZvE9wyXRAAAAAF7ozCtuaGF2Ym5t",
+    //           
+    //         credential: "299abf54-afd7-11ea-b1f4-0242ac140004",
+    //           
+    //         urls: ["turn:ss-turn2.xirsys.com:80?transport=udp",       
+    //             "turn:ss-turn2.xirsys.com:3478?transport=udp",       
+    //             "turn:ss-turn2.xirsys.com:80?transport=tcp",       
+    //             "turn:ss-turn2.xirsys.com:3478?transport=tcp",       
+    //             "turns:ss-turn2.xirsys.com:443?transport=tcp",       
+    //             "turns:ss-turn2.xirsys.com:5349?transport=tcp"  
+    //         ]
+    //     }
+    // ]
+    iceServers: [{
+        "urls": "stun:stun.l.google.com:19302"
+    },
+    // public turn server from https://gist.github.com/sagivo/3a4b2f2c7ac6e1b5267c2f1f59ac6c6b
+    // set your own servers here
+    {
+        url: 'turn:192.158.29.39:3478?transport=udp',
+        credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+        username: '28224511:1379330808'
+    }
+]
 }
-//{
-//     "iceServers": [{
-//             "urls": "stun:stun.l.google.com:19302"
-//         },
-//         // public turn server from https://gist.github.com/sagivo/3a4b2f2c7ac6e1b5267c2f1f59ac6c6b
-//         // set your own servers here
-//         {
-//             url: 'turn:192.158.29.39:3478?transport=udp',
-//             credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-//             username: '28224511:1379330808'
-//         }
-//     ]
-// }
+
 
 let constraints = {
     audio: true,

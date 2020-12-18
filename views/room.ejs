@@ -26,11 +26,15 @@
 <body>
     <a name="" id="" class="btn btn-primary" href="/" role="button">redirect</a>
     
-    <% if (locals.user1=null) { %>
-     <%= locals.user.id %> 
+    <% if (locals.user!=null) { %>
+        <script>
+            const USER = <%- JSON.stringify(locals.user)%> ;
+            console.log(USER)
+        </script>
     <% } %>
+    
+    
 
-    b4
 </body>
 
 </html>
