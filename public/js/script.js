@@ -5,21 +5,23 @@ let localStreem = null;
 let peers={}
 
  const configuration = {
-    // iceServers: [{   urls: ["stun:ss-turn2.xirsys.com"] },
-    //     {  
-    //         username: "E4bphbAk4Dbopxj_8MMpnJzYcbgpnBH2x4b_ES-4pnw0ZQWb3Xt5kC8CZvE9wyXRAAAAAF7ozCtuaGF2Ym5t",
-    //           
-    //         credential: "299abf54-afd7-11ea-b1f4-0242ac140004",
-    //           
-    //         urls: ["turn:ss-turn2.xirsys.com:80?transport=udp",       
-    //             "turn:ss-turn2.xirsys.com:3478?transport=udp",       
-    //             "turn:ss-turn2.xirsys.com:80?transport=tcp",       
-    //             "turn:ss-turn2.xirsys.com:3478?transport=tcp",       
-    //             "turns:ss-turn2.xirsys.com:443?transport=tcp",       
-    //             "turns:ss-turn2.xirsys.com:5349?transport=tcp"  
-    //         ]
-    //     }
-    // ]
+    iceServers: [{   urls: ["stun:ss-turn2.xirsys.com"] },
+        {  
+            username: "ze4whgfnMDvaXx5TfTI_gv_TEkTKTZ3bos-EyDL9AUiM8WLqQ1C3egLitrhHt7fkAAAAAF_c86tuaGF2Ym5tMg==",
+              
+            credential: "26963e64-415e-11eb-8ab6-0242ac140004",
+              
+            urls: ["stun:us-turn7.xirsys.com",
+            "turn:us-turn7.xirsys.com:80?transport=udp",
+            "turn:us-turn7.xirsys.com:3478?transport=udp",
+            "turn:us-turn7.xirsys.com:80?transport=tcp",
+            "turn:us-turn7.xirsys.com:3478?transport=tcp",
+            "turns:us-turn7.xirsys.com:443?transport=tcp",
+            "turns:us-turn7.xirsys.com:5349?transport=tcp"  
+            ]
+        }
+    ]
+
     // iceServers: [{url:'stun:stun01.sipphone.com'},
     // {url:'stun:stun.ekiga.net'},
     // {url:'stun:stun.fwdnet.net'},
