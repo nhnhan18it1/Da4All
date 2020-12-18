@@ -156,7 +156,8 @@ app.get("/getroom", (req, res) => {
 
 app.get("/turnsv", function (req, res) {
   let o = {
-    iceServers: [{ urls: ["stun:ss-turn2.xirsys.com"] },
+    iceServers: [
+    { urls: ["stun:ss-turn2.xirsys.com"] },
     {
       username: "E4bphbAk4Dbopxj_8MMpnJzYcbgpnBH2x4b_ES-4pnw0ZQWb3Xt5kC8CZvE9wyXRAAAAAF7ozCtuaGF2Ym5t",
 
@@ -173,13 +174,14 @@ app.get("/turnsv", function (req, res) {
     ]
   };
 
-  let o2 = {iceServers: [{
-    urls: "stun:stun.l.google.com:19302"
+  let o2 = {iceServers: [
+    {
+    urls: ["stun:stun.l.google.com:19302"]
     },
     // public turn server from https://gist.github.com/sagivo/3a4b2f2c7ac6e1b5267c2f1f59ac6c6b
     // set your own servers here
     {
-      url: 'turn:192.158.29.39:3478?transport=udp',
+      urls: ['turn:192.158.29.39:3478?transport=udp'],
       credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
       username: '28224511:1379330808'
     }
