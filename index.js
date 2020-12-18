@@ -191,7 +191,9 @@ app.get("/turnsv", function (req, res) {
     httpres.on("error", function (e) { console.log("error: ", e); });
     httpres.on("end", function () {
       console.log("response: ", str);
-      res.send(str);
+      var rs = JSON.parse(str)
+      rs.v.iceServers = [rs.v.iceServers]
+      res.json(rs);
     });
   });
 
