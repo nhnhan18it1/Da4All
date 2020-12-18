@@ -193,6 +193,7 @@ app.get("/turnsv", function (req, res) {
       console.log("response: ", str);
       var rs = JSON.parse(str)
       rs.v.iceServers = [rs.v.iceServers]
+      rs.v.iceServers.push({urls: ["stun:ss-turn2.xirsys.com"]})
       res.json(rs);
     });
   });
