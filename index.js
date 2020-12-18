@@ -210,7 +210,7 @@ app.get("/turnsv", function (req, res) {
 
   httpreq.on("error", function (e) { console.log("request error: ", e); });
   httpreq.end(bodyString);
-  res.send(o2)
+  res.json(o2)
 })
 // app.get('/:room',(req, res)=>{
 //     res.render('room',{roomId: req.params.room})
