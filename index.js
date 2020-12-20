@@ -311,6 +311,10 @@ io.on("connection", function (socket) {
   socket.on("outRoom", (data) => {
     groups.forEach((item, index) => {
       if (item.gId == data) {
+        for(let id in item.gpeers) {
+          if (socket.id=id) continue
+          item.gpeers[id].emit("removePeer",socket.id)
+        }
         delete item.gpeers[socket.id]
         if (item.gpeers.length == 0) {
           groups.splice(index, 1)
