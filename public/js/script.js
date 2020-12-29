@@ -1,5 +1,3 @@
-
-console.log("hello")
 let socket
 let localStreem = null;
 let peers={}
