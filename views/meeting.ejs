@@ -97,6 +97,7 @@
 </footer>
 <script>
     const ROOM_ID = "<%= roomId %>"
+    const USER = JSON.parse("<%= locals.user %>")
     isClose = true
     function openLeftMenu() {
         (isClose) ? document.getElementById("leftMenu").style.display = "block" : document.getElementById("leftMenu").style.display = "none";

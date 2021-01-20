@@ -3,9 +3,15 @@ var createRoom = function (con, roomName, key, main, callback) {
         if (err) {
             callback(false)
             throw err
-            
         }
-        callback(true)
+        con.query("SELECT ID FROM room WHERE room.name LIKE ? AND room.Key LIKE ?",[roomName,key], function (err, result, fields) { 
+            if (err) {
+                callback(false)
+                throw err
+            }
+            callback(result[0].ID)
+         })
+        
     })
  }
 var getRoom = function (con,callback) { 

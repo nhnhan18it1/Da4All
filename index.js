@@ -115,10 +115,39 @@ app.get("/createroom", function (req, res) {
 })
 
 app.get("/login", function (req, res) {
-
-  res.render("login");
+  
+  var s = req.app.get('log');
+  req.app.set('log',"")
+  if (req.app.get('log')!=null && req.app.get('log')!= "") {
+    console.log("login no",s)
+    res.render("login2",{loger: s});
+  }
+  else{
+    console.log(s)
+    res.render('login2',{loger: ""});
+  }
 
 })
+
+app.post("/login", (req, res) => {
+  var username = req.body.username;
+  var pass = req.body.password;
+  acc.login(connection, username, pass, (rs) => {
+    if (rs.length!=0) {
+      req.app.set('log',"")
+      req.session.user = rs[0];
+      //res.json(rs);
+      console.log(rs)
+      res.redirect("/createroom");
+    }
+    else{
+      req.app.set('log',"Sai tai khoan hoac mat khau")
+      res.redirect("/login");
+    }
+    
+  });
+})
+
 
 app.post("/createroom", (req, res) => {
   var roomName = req.body.roomName;
@@ -127,7 +156,9 @@ app.post("/createroom", (req, res) => {
   if (roomName && key && main) {
     room.createRoom(connection, roomName, key, main, function (param) {
       console.log(param)
-      res.json(param)
+      req.app.set('roomID',param)
+      res.redirect('/meeting/'+roomName)
+      //res.json(param)
     })
   }
   else {
@@ -136,15 +167,6 @@ app.post("/createroom", (req, res) => {
 
 })
 
-app.post("/login", (req, res) => {
-  var username = req.body.username;
-  var pass = req.body.password;
-  console.log(req.body.username);
-  acc.login(connection, username, pass, (rs) => {
-    console.log(rs);
-    res.json(rs);
-  });
-})
 
 
 
