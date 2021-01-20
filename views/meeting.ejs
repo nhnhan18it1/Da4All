@@ -80,12 +80,14 @@
             <video id="mainvideo" class="vid" autoplay muted></video>
         </div>
     </div>
-
+    <canvas id="canvas" style="position: fixed; right: 1%;;top: 25%;z-index: 20px;border: 1px solid white; " width="500" height="500"></canvas>
     <div class="row" style="position: fixed;bottom: 0;left: 0;background-color: white;width: 100%;height: 100px;margin: 0;">
         <div class="col-md-12 column-1 col-md-offset-2" style="align-items: center;text-align: center;padding-top: 15px;padding-bottom: 15px;">
             <button style="margin: auto;height: 100%;width: 8%;font-size: 25px;color: brown;" type="button" class="btn btn-light"><i class="fas fa-microphone-slash"></i></button>
             <button style="margin: auto;height: 100%;width: 8%;font-size: 25px;color: brown;" type="button" class="btn btn-light"><i class="fas fa-phone-slash"></i></button>
             <button style="margin: auto;height: 100%;width: 8%;font-size: 25px;color: brown;" type="button" class="btn btn-light"><i class="fas fa-video-slash"></i></button>
+            <button style="margin: auto;height: 100%;width: 8%;font-size: 25px;color: rgb(42, 165, 128);" onclick="capture()" type="button" class="btn btn-light"><i class="fas fa-camera-retro"></i></button>
+            <button style="margin: auto;height: 100%;width: 8%;font-size: 25px;color: rgb(42, 65, 165);" onclick="sendImg()" type="button" class="btn btn-light"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
     
@@ -97,7 +99,7 @@
 </footer>
 <script>
     const ROOM_ID = "<%= roomId %>"
-    const USER = JSON.parse("<%= locals.user %>")
+    
     isClose = true
     function openLeftMenu() {
         (isClose) ? document.getElementById("leftMenu").style.display = "block" : document.getElementById("leftMenu").style.display = "none";
@@ -123,7 +125,12 @@
         document.getElementById("rightMenu").style.display = "none";
         isClose = true
     }
+    <% if (locals.user!=null) { %>
+        const USER = JSON.parse("<%= locals.user %>");
+    <% } %>
+    
 </script>
+
 <script lang="text/javascript" src="/socket.io/socket.io.js"></script>
 <script src="/simple-peer/simplepeer.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
