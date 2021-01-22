@@ -148,6 +148,24 @@ app.post("/login", (req, res) => {
   });
 })
 
+app.post("/loginmb", (req, res) => {
+  var username = req.body.username;
+  var pass = req.body.password;
+  acc.login(connection, username, pass, (rs) => {
+    if (rs.length!=0) {
+      req.app.set('log',"")
+      req.session.user = rs[0];
+      res.json(rs);
+      // console.log(rs)
+      // res.redirect("/createroom");
+    }
+    else{
+      req.app.set('log',"Sai tai khoan hoac mat khau")
+      res.redirect("/login");
+    }
+    
+  });
+})
 
 app.post("/createroom", (req, res) => {
   var roomName = req.body.roomName;
