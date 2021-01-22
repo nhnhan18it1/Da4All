@@ -419,7 +419,7 @@ function convertBase642() {
     return base64;
  }
 function sendImg() { 
-    socket.emit("sendImg",{gId:ROOM_ID,data:convertBase64()})
+    socket.emit("sendImg",{gId:ROOM_ID,data:convertBase64(),name:socket.id})
     let ct = $("#ipmess").val();
     let ctv = document.createElement('p')
     let name = document.createElement('strong')

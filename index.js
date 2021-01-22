@@ -379,6 +379,8 @@ io.on("connection", function (socket) {
   })
 
   socket.on("sendImg",(data)=>{
+    let crtime = new Date();
+    data.time = crtime.getHours().toString() + ":" + crtime.getMinutes().toString()
     groups.forEach((item, index) => {
       if (item.name == data.gId) {
         for (let id in item.gpeers) {
